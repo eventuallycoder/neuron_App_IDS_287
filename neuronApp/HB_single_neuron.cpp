@@ -63,7 +63,7 @@ private:
 int main()
 {
     FILE *fp = fopen("voltage.txt", "w");
-    double gSR_var = 0.30;
+    double gSR_var = 0.46;
     double time;
     double Iinj = 1.0;
 

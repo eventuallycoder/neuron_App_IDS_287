@@ -5,5 +5,6 @@ set xlabel "time (ms)"
 set ylabel "voltage (mV)"
 
 set xrange [0:20000] 
+set yrange [-80:20]
 
 plot "voltage.txt" w l lt rgb "#0000"

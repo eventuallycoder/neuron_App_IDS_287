@@ -143,8 +143,6 @@ int main()
 
             v_current = nrn.X[0];
 
-            // cout << "current val: " << v_current << "/n";
-
             fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\n", time, nrn.X[0], nrn.X[1], nrn.X[2], nrn.X[3]);
 
             if (v_previous < threshold && v_current > threshold)
@@ -168,9 +166,10 @@ int main()
         double time_first_minus_second = (time_at_last_spike - time_at_first_spike);
 
         fprintf(freq_p, "%.2f \t %f\n", gSR_var, spike_count_sec / time_first_minus_second);
-        // end of frequeny for loop
+        // end of frequency for loop
     }
     fclose(fp);
+    fclose(freq_p);
 
     cout << "Program Finished" << endl;
     return 0;
