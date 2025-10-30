@@ -74,7 +74,16 @@ int main()
      
 
     Neurons nrn; // Creates different neurons
+cout << "Please enter start gSR value: ";
+    double start_gSR;
+    cin >> start_gSR;
 
+    cout << "Please enter stop gSR value: ";
+    double stop_gSR;
+    cin >> stop_gSR;
+
+    for (double i = start_gSR; i <= stop_gSR; i += 0.01)
+    {
         int spike_count = 0;
 
         /*Parameters in the model only need to be changed here */
@@ -83,7 +92,7 @@ int main()
             1.5,     // gNa
             2.0,     // gK
             0.25,    // gSD
-            gSR_var= 0.46, // gSR
+            gSR_var= i, // gSR
             2.0,     // tauK
             10.0,    // tauSD
             20.0,    // tauSR
@@ -164,6 +173,7 @@ int main()
 
         double spike_count_sec = spike_count * 1000;
 
+    }
     
     fclose(fp);
     fclose(ISI_p);
