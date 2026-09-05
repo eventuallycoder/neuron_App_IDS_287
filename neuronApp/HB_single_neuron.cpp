@@ -49,7 +49,7 @@ private:
     double tauK, tauSD, tauSR;
     double sNa, sK, sSD;
     double V0Na, V0K, V0SD;
-    double VLeak, VNa, VK, VSD, VSR;
+    double Nernst_Potential_For_Leak, Nernst_Potential_For_Sodium, Nernst_Potential_For_Potassium, Nernst_Potential_For_SD, Nernst_Potential_For_SR;
     double ro, phi, theta, nu;
     double Cm;
 };
@@ -63,9 +63,9 @@ private:
 int main()
 {
     FILE *fp = fopen("voltage.txt", "w");
-    double gSR_var = 0.46;
+    double gSR_var = 0.3;
     double time;
-    double Iinj = 1.0;
+    double Iinj = 1.5;
 
     Neurons nrn; // Creates different neurons
     /*Parameters in the model only need to be changed here */
@@ -84,11 +84,11 @@ int main()
         -25.0,   // V0Na
         -25.0,   // V0K
         -40.0,   // V0SD
-        -60.0,   // Vleak
-        50.0,    // VNa
-        -90.0,   // VK
-        50.0,    // VSD
-        -90.0,   // VSR
+        -60.0,   // Nernst_Potential_For_Leak
+        50.0,    // Nernst_Potential_For_Sodium
+        -90.0,   // Nernst_Potential_For_Potassium
+        50.0,    // Nernst_Potential_For_SD
+        -90.0,   // Nernst_Potential_For_SR
         0.607,   // ro
         0.124,   // phi
         0.17,    // theta
@@ -146,11 +146,11 @@ Neurons::Neurons()
     V0Na = -25.0;
     V0K = -25.0;
     V0SD = -40.0;
-    VLeak = -60.0;
-    VNa = 50.0;
-    VK = -90.0;
-    VSD = 50.0;
-    VSR = -90.0;
+    Nernst_Potential_For_Leak = -60.0;
+    Nernst_Potential_For_Sodium = 50.0;
+    Nernst_Potential_For_Potassium = -90.0;
+    Nernst_Potential_For_SD = 50.0;
+    Nernst_Potential_For_SR = -90.0;
     ro = 0.607;
     phi = 0.124;
     theta = 0.17;
@@ -181,11 +181,11 @@ void Neurons::set_parameters(double neuronParameters[])
     V0Na = neuronParameters[11];
     V0K = neuronParameters[12];
     V0SD = neuronParameters[13];
-    VLeak = neuronParameters[14];
-    VNa = neuronParameters[15];
-    VK = neuronParameters[16];
-    VSD = neuronParameters[17];
-    VSR = neuronParameters[18];
+    Nernst_Potential_For_Leak = neuronParameters[14];
+    Nernst_Potential_For_Sodium = neuronParameters[15];
+    Nernst_Potential_For_Potassium = neuronParameters[16];
+    Nernst_Potential_For_SD = neuronParameters[17];
+    Nernst_Potential_For_SR = neuronParameters[18];
     ro = neuronParameters[19];
     phi = neuronParameters[20];
     theta = neuronParameters[21];
@@ -241,11 +241,11 @@ double Neurons::equations(double Z[], int var, double Isyn)
     {
     case 0:
         aNainf = 1.0 / (1.0 + exp(-sNa * (Z[0] - V0Na)));
-        Ileak = gLeak * (Z[0] - VLeak);
-        INa = ro * gNa * aNainf * (Z[0] - VNa);
-        IK = ro * gK * Z[1] * (Z[0] - VK);
-        ISD = ro * gSD * Z[2] * (Z[0] - VSD);
-        ISR = ro * gSR * Z[3] * (Z[0] - VSR);
+        Ileak = gLeak * (Z[0] - Nernst_Potential_For_Leak);
+        INa = ro * gNa * aNainf * (Z[0] - Nernst_Potential_For_Sodium);
+        IK = ro * gK * Z[1] * (Z[0] - Nernst_Potential_For_Potassium);
+        ISD = ro * gSD * Z[2] * (Z[0] - Nernst_Potential_For_SD);
+        ISR = ro * gSR * Z[3] * (Z[0] - Nernst_Potential_For_SR);
 
         val = -Ileak - INa - IK - ISD - ISR - Isyn;
         val /= Cm;
@@ -261,7 +261,7 @@ double Neurons::equations(double Z[], int var, double Isyn)
         break;
 
     case 3:
-        ISD = ro * gSD * Z[2] * (Z[0] - VSD);
+        ISD = ro * gSD * Z[2] * (Z[0] - Nernst_Potential_For_SD);
         val = -phi * (nu * ISD + theta * Z[3]) / tauSR;
         break;
     }

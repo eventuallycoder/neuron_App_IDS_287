@@ -68,19 +68,27 @@ int main()
     // NEW: added a new file called frequeny.txt to write to
     FILE *ISI_p = fopen("Interspike_Intervals.txt", "w");
     double gSR_var;
+
+    //measured in milliseconds (ms)
     double time;
     double Iinj = 1.0;
     // NEW: added an int to keep track of the frequency
      
 
     Neurons nrn; // Creates different neurons
-cout << "Please enter start gSR value: ";
+
+    //represents voltage as a variable
+    double voltage = nrn.X[0];
+    cout << "Please enter start gSR value: ";
     double start_gSR;
     cin >> start_gSR;
 
     cout << "Please enter stop gSR value: ";
     double stop_gSR;
     cin >> stop_gSR;
+
+    //set up file headers
+    fprintf(ISI_p, "%s\t    %s\n", "gSR_var", "Time stop - time start");
 
     for (double i = start_gSR; i <= stop_gSR; i += 0.01)
     {
@@ -144,9 +152,9 @@ cout << "Please enter start gSR value: ";
 
             nrn.RK4(Iinj); // solves neurons equation
 
-            v_current = nrn.X[0];
+            v_current = voltage;
         
-            fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\n", time, nrn.X[0], nrn.X[1], nrn.X[2], nrn.X[3]);
+            fprintf(fp, "%lf\t%lf\t%lf\t%lf\t%lf\n", time, voltage, nrn.X[1], nrn.X[2], nrn.X[3]);
 
             if (v_previous < threshold && v_current > threshold)
             {
