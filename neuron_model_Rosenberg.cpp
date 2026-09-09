@@ -1,4 +1,6 @@
 // Personal implementation of the single neuron code -- Aaron Rosenberg
+
+//compile with: g++ neuron_model_Rosenberg.cpp -o model_R
 #include <math.h> //math.h library used to perform ln()
 #include <iostream>
 #include <string>
