@@ -1,6 +1,7 @@
 // This code is intended to simulate a network of neurons
 // connected in a user-defined way via chemical synapse
 // Illinois State Universtiy 2014, Dr. Rosa's Lab
+// Updated comments by Aaron Rosenberg, Studying under Dr. Follmann
 
 //setting up standard library imports 
 #include <iostream>
@@ -23,16 +24,16 @@ using namespace std;
 // Parameters
 
 //how long the simulation runs for
-#define max_steps 500000
+#define max_steps 5000000
 
-//A period of tie to run the simulation without recording data
-#define transient 0 // 700000//2
+//A period of time to run the simulation without recording data
+#define transient 700000 //2
 
 //the time step  (dt) for the integreator
 #define step_size 0.01
 
 //The number of neurons in the model
-#define nrnNumber 3
+#define nrnNumber 3 //this means were going to run three neurons connected
 
 //the state variable number for each neuron (Voltage, ion channel states, synaptic concentrations, etc.)
 #define nVar 8
@@ -107,6 +108,7 @@ int main()
   FILE *fp2;
   FILE *fp_ISI0 = fopen("ISI_nrn0_case1_MT_CE_dnmwtest1.txt", "w");
   FILE *fp_ISI1 = fopen("ISI_nrn1_case1_MT_CE_dnmwtest1.txt", "w");
+  FILE *fp_ISI2 = fopen("ISI_nrn1_case1_MT_CE_dnmwtest1.txt", "w");
   // FILE *fp_ISI2 = fopen("ISI_nrn2.txt","w");
 
   double Crelease1;
@@ -120,7 +122,7 @@ int main()
   double C_mt1 = 1.0;
   double p_mt1 = 0.2;
 
-  for (g_chemical = 0.; g_chemical <= 0.0001; g_chemical += 0.001)
+  for (g_chemical = 0; g_chemical <= 1; g_chemical += 0.1)
   {
 
     cout << g_chemical << endl;
@@ -284,8 +286,8 @@ int main()
           case 2:
             if (spikeTime[num] > 0.0)
             {
-              // fprintf(fp_ISI2,"%5.3lf\t%7.3lf\n",g_chemical,n*step_size-spikeTime[num]);
-              // fflush(fp_ISI2);
+               fprintf(fp_ISI2,"%5.3lf\t%7.3lf\n",g_chemical,n*step_size-spikeTime[num]);
+               fflush(fp_ISI2);
             }
             break;
           }

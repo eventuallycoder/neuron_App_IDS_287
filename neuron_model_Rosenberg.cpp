@@ -12,9 +12,9 @@ class Neuron
         static constexpr double body_temperature = 310.15; //represents the human body temperature, measured in Kelvin
         
         //nernst potential: computes a single ion's equillibrium potential
-        double nernst_potential(double conductance_out, double conductance_in, double valence_z, double T = body_temperature)
+        double nernst_potential(double concentration_out, double concentration_in, double valence_z, double T = body_temperature)
         {
-            return ((gas_constant_R * T) / (valence_z * faradays_constant_F)) * log(conductance_out/conductance_in); // E_ion in volts (not mV)
+            return ((gas_constant_R * T) / (valence_z * faradays_constant_F)) * log(concentration_out/concentration_in); // E_ion in volts (not mV)
         }
 
         //GHK function, the summation of the nernst potentials from each ion
@@ -57,8 +57,8 @@ class Neuron
 struct Ion
 {
     std::string name;
-    double conductance_out;
-    double conductance_in;
+    double concentration_out;
+    double concentration_in;
     double z;   
 };
 
@@ -68,38 +68,38 @@ int main(int argc, char* argv[])
 
     Ion Potassium;
     Potassium.name = "K+   ";
-    Potassium.conductance_out = 5.0;
-    Potassium.conductance_in = 140.0;
+    Potassium.concentration_out = 5.0;
+    Potassium.concentration_in = 140.0;
     Potassium.z = 1;
 
     Ion Sodium;
     Sodium.name = "Na+   ";
-    Sodium.conductance_out = 145;
-    Sodium.conductance_in = 15.0;
+    Sodium.concentration_out = 145;
+    Sodium.concentration_in = 15.0;
     Sodium.z = 1;
 
     Ion Cloride;
     Cloride.name = "Cl-   ";
-    Cloride.conductance_out = 110.0;
-    Cloride.conductance_in = 10.0;
+    Cloride.concentration_out = 110.0;
+    Cloride.concentration_in = 10.0;
     Cloride.z = -1;
 
     std::cout << "---------------------" << std::endl;
     
     std::cout << "Printing out K, Na, and Cl nernst potentials individually" << std::endl;
-    std::cout << Potassium.name << 1000 * n.nernst_potential(Potassium.conductance_out,Potassium.conductance_in,Potassium.z) << " mV" << std::endl;
-    std::cout << Sodium.name << 1000 * n.nernst_potential(Sodium.conductance_out,Sodium.conductance_in,Sodium.z) << " mV" << std::endl;
-    std::cout << Cloride.name  << 1000 * n.nernst_potential(Cloride.conductance_out,Cloride.conductance_in,Cloride.z) << " mV" << std::endl;
+    std::cout << Potassium.name << 1000 * n.nernst_potential(Potassium.concentration_out,Potassium.concentration_in,Potassium.z) << " mV" << std::endl;
+    std::cout << Sodium.name << 1000 * n.nernst_potential(Sodium.concentration_out,Sodium.concentration_in,Sodium.z) << " mV" << std::endl;
+    std::cout << Cloride.name  << 1000 * n.nernst_potential(Cloride.concentration_out,Cloride.concentration_in,Cloride.z) << " mV" << std::endl;
 
     std::cout << "---------------------" << std::endl;
 
     std::cout << "Using GHK equation to test voltage of the cell given each nernst potential of the ions in the cell" << std::endl;
 
     //Case A
-    std::cout << "Case A: " << 1000 *  n.ghk_voltage(50, 2, 15, Potassium.conductance_out, Potassium.conductance_in, Sodium.conductance_out, Sodium.conductance_in, Cloride.conductance_out, Cloride.conductance_in) << " mV" << std::endl;
+    std::cout << "Case A: " << 1000 *  n.ghk_voltage(50, 2, 15, Potassium.concentration_out, Potassium.concentration_in, Sodium.concentration_out, Sodium.concentration_in, Cloride.concentration_out, Cloride.concentration_in) << " mV" << std::endl;
 
     //Case B
-    std::cout << "Case B: " << 1000 *  n.ghk_voltage(5,100, 5, Potassium.conductance_out, Potassium.conductance_in, Sodium.conductance_out, Sodium.conductance_in, Cloride.conductance_out, Cloride.conductance_in) << " mV" << std::endl;
+    std::cout << "Case B: " << 1000 *  n.ghk_voltage(5,100, 5, Potassium.concentration_out, Potassium.concentration_in, Sodium.concentration_out, Sodium.concentration_in, Cloride.concentration_out, Cloride.concentration_in) << " mV" << std::endl;
 
     std::cout << "---------------------" << std::endl;
 
@@ -107,17 +107,19 @@ int main(int argc, char* argv[])
 
     for(int loop_variable = 0; loop_variable < 500; loop_variable++)
     {
-        n.apply_leak(Sodium.conductance_in, Potassium.conductance_in, 5);
-        n.apply_pump(Sodium.conductance_in, Potassium.conductance_in, 3);
+        n.apply_leak(Sodium.concentration_in, Potassium.concentration_in, 0.05);
+        //n.apply_pump(Sodium.concentration_in, Potassium.concentration_in, 2.5);
 
-        std::cout << "New Voltage: " << 1000 *  n.ghk_voltage(50, 0, 15, Potassium.conductance_out, Potassium.conductance_in, Sodium.conductance_out, Sodium.conductance_in, Cloride.conductance_out, Cloride.conductance_in) << " mV" << std::endl;
+        std::cout << "New Voltage: " << 1000 *  n.ghk_voltage(50, 2, 15, Potassium.concentration_out, Potassium.concentration_in, Sodium.concentration_out, Sodium.concentration_in, Cloride.concentration_out, Cloride.concentration_in) << " mV" << std::endl;
 
+        std::cout << Potassium.name << 1000 * n.nernst_potential(Potassium.concentration_out,Potassium.concentration_in,Potassium.z) << " mV" << std::endl;
+        std::cout << Sodium.name << 1000 * n.nernst_potential(Sodium.concentration_out,Sodium.concentration_in,Sodium.z) << " mV" << std::endl;
+        std::cout << Cloride.name  << 1000 * n.nernst_potential(Cloride.concentration_out,Cloride.concentration_in,Cloride.z) << " mV" << std::endl;
+        std::cout << "Potassium concentration inside: " << Potassium.concentration_in << std::endl;
+        std::cout << "----------------------------------------------------" << std::endl;
     }
 
-    std::cout << Potassium.name << 1000 * n.nernst_potential(Potassium.conductance_out,Potassium.conductance_in,Potassium.z) << " mV" << std::endl;
-    std::cout << Sodium.name << 1000 * n.nernst_potential(Sodium.conductance_out,Sodium.conductance_in,Sodium.z) << " mV" << std::endl;
-    std::cout << Cloride.name  << 1000 * n.nernst_potential(Cloride.conductance_out,Cloride.conductance_in,Cloride.z) << " mV" << std::endl;
-    std::cout << "Potassium inside concentration: " << Potassium.conductance_in << std::endl;
+   
 
 
 
