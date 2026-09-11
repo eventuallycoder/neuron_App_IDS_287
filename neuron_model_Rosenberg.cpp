@@ -21,7 +21,12 @@ class Neuron
         double ghk_voltage(double p_k, double p_na, double p_cl, double k_out, double k_in, double na_out, double na_in, double cl_out, double cl_in, double T = body_temperature)
         {
 
+
+            //std::cout << "Log number: " << (p_k * k_out +p_na * na_out + p_cl * cl_in)  /  (p_k * k_in + p_na * na_in  + p_cl * cl_out) << std::endl;
+
             return ((gas_constant_R * body_temperature ) / faradays_constant_F) * log( (p_k * k_out +p_na * na_out + p_cl * cl_in)  /  (p_k * k_in + p_na * na_in  + p_cl * cl_out));
+
+            
         }
 
         /*leak channel: represents Na entering the cell and K leaving the cell moving at a constant slow rate
@@ -33,7 +38,7 @@ class Neuron
             k_in -= 1.0 * leak_rate;
         }
 
-        /*represents the Na/K pump which actively pumps out 3 Na for every 2 K
+        /*represents the Na/K pump which actively pumps out 3 Na for every 2 K in
         Using a 3:2 ratio (1.5:1.0 in the code) because we want to counteract the leak channel
         which has the opposite affect as the pump*/
         void apply_pump(double &na_in, double &k_in, double pump_rate)
@@ -49,13 +54,13 @@ class Neuron
 };
 
 //represents one ion
-    struct Ion
-    {
-        std::string name;
-        double conductance_out;
-        double conductance_in;
-        double z;   
-    };
+struct Ion
+{
+    std::string name;
+    double conductance_out;
+    double conductance_in;
+    double z;   
+};
 
 int main(int argc, char* argv[])
 {
@@ -100,19 +105,19 @@ int main(int argc, char* argv[])
 
     std::cout << "Simulating leak and pump channels" << std::endl;
 
-    for(int loop_variable = 0; loop_variable < 2; loop_variable++)
+    for(int loop_variable = 0; loop_variable < 500; loop_variable++)
     {
         n.apply_leak(Sodium.conductance_in, Potassium.conductance_in, 5);
-        n.apply_pump(Sodium.conductance_in, Potassium.conductance_in, 2.5);
+        n.apply_pump(Sodium.conductance_in, Potassium.conductance_in, 3);
 
-        std::cout << "New Voltage: " << 1000 *  n.ghk_voltage(50, 2, 15, Potassium.conductance_out, Potassium.conductance_in, Sodium.conductance_out, Sodium.conductance_in, Cloride.conductance_out, Cloride.conductance_in) << " mV" << std::endl;
+        std::cout << "New Voltage: " << 1000 *  n.ghk_voltage(50, 0, 15, Potassium.conductance_out, Potassium.conductance_in, Sodium.conductance_out, Sodium.conductance_in, Cloride.conductance_out, Cloride.conductance_in) << " mV" << std::endl;
 
     }
 
     std::cout << Potassium.name << 1000 * n.nernst_potential(Potassium.conductance_out,Potassium.conductance_in,Potassium.z) << " mV" << std::endl;
     std::cout << Sodium.name << 1000 * n.nernst_potential(Sodium.conductance_out,Sodium.conductance_in,Sodium.z) << " mV" << std::endl;
     std::cout << Cloride.name  << 1000 * n.nernst_potential(Cloride.conductance_out,Cloride.conductance_in,Cloride.z) << " mV" << std::endl;
-
+    std::cout << "Potassium inside concentration: " << Potassium.conductance_in << std::endl;
 
 
 
